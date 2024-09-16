@@ -3,9 +3,7 @@
 import os
 import sys
 import pygame
-import asyncio
 import random
-import sqlite3
 import sqlitecloud
 
 #PyGame Initialisation
@@ -13,11 +11,6 @@ pygame.init()
 pygame.font.init()
 
 # Connect to db
-baseDir = os.path.dirname(os.path.abspath(__file__))
-dbPath = os.path.join(baseDir, "./highscores.db")
-#db = sqlite3.connect(dbPath)
-#cursor = db.cursor()
-
 db = sqlitecloud.connect("sqlitecloud://cjt2v0bqsz.sqlite.cloud:8860?apikey=ScasSsHOWlJMG3JjOK0od5XAf2Bx4RbPvRuvZG8abDg")
 
 # Global Variable Declaration
@@ -41,7 +34,7 @@ username = ""
 submitted = False
 
 # Timer Set Up
-timer = 10
+timer = 30
 timerInterval = 1000
 timerEvent = pygame.USEREVENT + 1
 pygame.time.set_timer(timerEvent, timerInterval)
@@ -87,7 +80,7 @@ inputFieldImg = gameSprite(inputFieldPath, False)
 
 
 # Main Function
-async def main():
+def main():
     global screen, clock, timer, running, timerText, score, scoreText, gameState, username, submitted
     
     # Main loop for the game
@@ -136,6 +129,9 @@ async def main():
                         db.execute("USE DATABASE highscores.db")
                         db.execute("INSERT INTO scores (name, score) VALUES (?,?);", (username, score))
                         db.commit()
+
+                        with open("toInsert.txt", "w") as file:
+                            file.write(username)
                     elif event.key == pygame.K_BACKSPACE:
                         username = username[:-1]
                     else:
@@ -168,10 +164,6 @@ async def main():
         # Updates screen
         pygame.display.flip()
         clock.tick(30)
-
-        await asyncio.sleep(0)
-
-    #pygame.quit()
 
 
 def titleScreen():
@@ -261,8 +253,6 @@ def drawGrid():
 
     # Changes gameState variable to "game"
     gameState = "game"
-
-    pygame.display.update()
 
 
 def gameLogic():
@@ -405,5 +395,6 @@ def scoreInput():
         
 
 # Run main() function
-asyncio.run(main())
+if __name__ == "__main__":
+    main()
 

@@ -126,12 +126,8 @@ def main():
                 if submitted == False:
                     if event.key == pygame.K_RETURN:
                         submitted = True
-                        db.execute("USE DATABASE highscores.db")
                         db.execute("INSERT INTO scores (name, score) VALUES (?,?);", (username, score))
                         db.commit()
-
-                        with open("toInsert.txt", "w") as file:
-                            file.write(username)
                     elif event.key == pygame.K_BACKSPACE:
                         username = username[:-1]
                     else:
